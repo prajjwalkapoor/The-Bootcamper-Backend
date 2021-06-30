@@ -84,14 +84,26 @@ exports.createBootcamps = async (req, res, next) => {
 
 exports.editBootcamp = async (req, res, next) => {
   try {
-    const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const bootcamp = await Bootcamp.findById(req.params.id);
     if (!bootcamp) {
-      res.status(400).json({ success: false });
-      console.log("There is some error");
+      res
+        .status(400)
+        .json({ success: false, message: "Bootcamp Does't exist" });
+      console.log("Bootcamp Does't exist");
+    } else if (req.user.id !== bootcamp.user.toString()) {
+      res.status(401).json({
+        success: false,
+        message: "You're not authorize to access this",
+      });
     } else {
+      const bootcamp = await Bootcamp.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
       res.status(200).json({ success: true, data: bootcamp });
       console.log("Data succcessfully created at server");
     }
@@ -106,11 +118,17 @@ exports.editBootcamp = async (req, res, next) => {
 
 exports.deleteBootcamp = async (req, res, next) => {
   try {
-    const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+    const bootcamp = await Bootcamp.findById(req.params.id);
     if (!bootcamp) {
       res.status(400).json({ success: false });
       console.log("There is some error");
+    } else if (req.user.id !== bootcamp.user.toString()) {
+      res.status(401).json({
+        success: false,
+        message: "You're not authorize to access this",
+      });
     } else {
+      const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
       res.status(200).json({ success: true, data: {} });
       console.log("Data succcessfully created at server");
     }
@@ -125,15 +143,23 @@ exports.deleteBootcamp = async (req, res, next) => {
 exports.addImage = async (req, res, next) => {
   try {
     const bootcamp = await Bootcamp.findById(req.params.id);
-    if (!bootcamp) return console.log("Bootcamp not found");
-    const image = req.files.image.tempFilePath;
-    cloudinary.uploader.upload(image, async function (error, result) {
-      const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, {
-        image: result.url,
+    if (!bootcamp) {
+      return console.log("Bootcamp not found");
+    } else if (req.user.id !== bootcamp.user.toString()) {
+      res.status(401).json({
+        success: false,
+        message: "You're not authorize to access this",
       });
-      res.json({ success: true, image: result.url });
-      console.log(error);
-    });
+    } else {
+      const image = req.files.image.tempFilePath;
+      cloudinary.uploader.upload(image, async function (error, result) {
+        const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, {
+          image: result.url,
+        });
+        res.json({ success: true, image: result.url });
+        console.log(error);
+      });
+    }
   } catch (err) {
     next(err);
   }

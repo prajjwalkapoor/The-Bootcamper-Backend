@@ -5,14 +5,20 @@ const cloudinary = require("../config/cloudinaryConfig");
 // @route   /api/v1/bootcamps/:bootcampId/courses
 // @access  Public
 
+
 exports.getCourses = async (req, res, next) => {
   try {
     const courses = await Course.find(
       req.params.bootcampId ? { bootcamp: req.params.bootcampId } : {}
-    ).populate({
-      path: "bootcamp",
-      select: "name description",
-    });
+    )
+      .populate({
+        path: "bootcamp",
+        select: "name description",
+      })
+      .populate({
+        path: "user",
+        select: "name role",
+      });
     res.status(200).json({
       success: true,
       count: courses.length,
@@ -29,10 +35,15 @@ exports.getCourses = async (req, res, next) => {
 
 exports.getCourse = async (req, res, next) => {
   try {
-    const course = await Course.findById(req.params.id).populate({
-      path: "bootcamp",
-      select: "name description",
-    });
+    const course = await Course.findById(req.params.id)
+      .populate({
+        path: "bootcamp",
+        select: "name description",
+      })
+      .populate({
+        path: "user",
+        select: "name role",
+      });
     res.status(200).json({
       success: true,
       data: course,
@@ -48,6 +59,7 @@ exports.getCourse = async (req, res, next) => {
 
 exports.createCourses = async (req, res, next) => {
   try {
+    req.body.user = req.user.id;
     req.body.bootcamp = req.params.bootcampId;
     const courses = await Course.create(req.body);
     res.status(200).json({
@@ -64,14 +76,28 @@ exports.createCourses = async (req, res, next) => {
 
 exports.editCourses = async (req, res, next) => {
   try {
-    const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    res.status(200).json({
-      success: true,
-      data: course,
-    });
+    const course = await Course.findById(req.params.id);
+    if (!course) {
+      res.status(400).json({
+        success: false,
+        message: "course does'nt exist",
+      });
+    } else if (req.user.id !== course.user.toString()) {
+      res.status(401).json({
+        success: false,
+        message: "You're not authorize to access this",
+      });
+    } else {
+      const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: course,
+      });
+    }
   } catch (err) {
     next(err);
   }
@@ -82,11 +108,24 @@ exports.editCourses = async (req, res, next) => {
 
 exports.deleteCourses = async (req, res, next) => {
   try {
-    const course = await Course.findByIdAndRemove(req.params.id);
-    res.status(200).json({
-      success: true,
-      data: {},
-    });
+    const course = await Course.findById(req.params.id);
+    if (!course) {
+      res.status(400).json({
+        success: false,
+        message: "course does'nt exist",
+      });
+    } else if (req.user.id !== course.user.toString()) {
+      res.status(401).json({
+        success: false,
+        message: "You're not authorize to access this",
+      });
+    } else {
+      const course = await Course.findByIdAndRemove(req.params.id);
+      res.status(200).json({
+        success: true,
+        data: {},
+      });
+    }
   } catch (err) {
     next(err);
   }

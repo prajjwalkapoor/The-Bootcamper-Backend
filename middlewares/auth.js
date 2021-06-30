@@ -19,13 +19,10 @@ exports.protects = async (req, res, next) => {
     const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = await Users.findById(verifiedUser.id);
-
     next();
   } catch (err) {
-    next(err);
+    // next(new Error("Not authorize to access this route"));
   }
-  req.user = await Users.findById(user.id);
-  next();
 };
 
 exports.authorize = (...roles) => {
