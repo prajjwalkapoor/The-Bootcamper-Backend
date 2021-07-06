@@ -30,8 +30,12 @@ const auth = require("./routes/auth");
 //mount routers
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/courses", courses);
-
 app.use("/api/v1/auth", auth);
+
+app.get("/", (req, res, next) => {
+  res.send({ success: true, message: "this is the landing of the server" });
+  next();
+});
 
 //middlewares
 app.use(errorHandler);

@@ -10,25 +10,25 @@ exports.getBootcamps = async (req, res, next) => {
     const removeFields = ["limit", "page", "sortBy"];
     removeFields.forEach((param) => delete reqQuery[param]);
     let { page, limit, sortBy } = req.query;
-    page = parseInt(page);
-    limit = parseInt(limit);
-    if (!page) page = 1;
-    if (!limit) limit = 10;
-    const skip = (page - 1) * limit;
+    // page = parseInt(page);
+    // limit = parseInt(limit);
+    // if (!page) page = 1;
+    // if (!limit) limit = 10;
+    // const skip = (page - 1) * limit;
 
     const bootcamps = await Bootcamp.find(reqQuery)
       .populate({
         path: "user",
         select: "name role",
       })
-      .limit(limit)
-      .skip(skip)
+      // .limit(limit)
+      // .skip(skip)
       .sort(sortBy || "-createdAt");
     res.status(200).json({
       success: true,
       count: bootcamps.length,
-      currentPage: page,
-      limit: bootcamps.length,
+      // currentPage: page,
+      // limit: bootcamps.length,
       data: bootcamps,
     });
   } catch (err) {
