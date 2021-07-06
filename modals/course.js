@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const courseSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -75,4 +76,5 @@ courseSchema.post("save", function () {
 courseSchema.pre("remove", function () {
   this.constructor.getSumAndAverageCost(this.bootcamp);
 });
+
 module.exports = mongoose.model("Courses", courseSchema);
