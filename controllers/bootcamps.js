@@ -63,6 +63,33 @@ exports.getBootcamp = async (req, res, next) => {
   }
 };
 
+// @disc    GET users bootcamps
+// @route   /api/v1/bootcamps/user/:id
+// @access  Public
+
+exports.getUserBootcamps = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const bootcamps = await Bootcamp.find({ user: userId }).populate({
+      path: "user",
+      select: "name role",
+    });
+
+    if (!bootcamps) {
+      res.status(400).send({
+        success: false,
+        message: "server error bootcamps not found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        data: bootcamps,
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
 // @disc    create single bootcamp
 // @route   /api/v1/bootcamps/
 // @access  Private

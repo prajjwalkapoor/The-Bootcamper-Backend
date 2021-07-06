@@ -30,13 +30,12 @@ const UserSchema = new mongoose.Schema({
   resetPasswordToken: String,
   resetPasswordExpire: Date,
   createdAt: {
-    type: Date,
-    default: Date.now,
+    type: String,
+    default: Date,
   },
 });
 
 // encrypting password
-
 
 UserSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt(10);

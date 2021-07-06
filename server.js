@@ -1,10 +1,11 @@
 const express = require("express");
 const fileupload = require("express-fileupload");
 const dotenv = require("dotenv");
+const cors = require("cors");
 dotenv.config({ path: "./config/config.env" });
 const connectDb = require("./config/db");
 const app = express();
-
+app.use(cors());
 const errorHandler = require("./middlewares/error_handler");
 const PORT = process.env.PORT;
 
@@ -29,13 +30,11 @@ const auth = require("./routes/auth");
 //mount routers
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/courses", courses);
-app.use("/:bootcampId/courses", courses);
 
 app.use("/api/v1/auth", auth);
 
 //middlewares
 app.use(errorHandler);
-
 
 app.listen(PORT, () => {
   console.log(

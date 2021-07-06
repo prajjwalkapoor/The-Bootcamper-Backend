@@ -8,11 +8,13 @@ const {
   editBootcamp,
   deleteBootcamp,
   addImage,
+  getUserBootcamps,
 } = require("../controllers/bootcamps");
 
 //Other resources routes
-// const courseRouter = require("./courses");
+const courseRouter = require("./courses");
 //re-route into other resource router
+router.use("/:bootcampId/courses", courseRouter);
 
 router
   .route("/")
@@ -23,6 +25,10 @@ router
   .get(getBootcamp)
   .put(protects, authorize("publisher", "admin"), editBootcamp)
   .delete(protects, authorize("publisher", "admin"), deleteBootcamp);
+
+router
+  .route("/user/:id")
+  .get(protects, authorize("publisher", "admin"), getUserBootcamps);
 router
   .route("/:id/image")
   .put(protects, authorize("publisher", "admin"), addImage);

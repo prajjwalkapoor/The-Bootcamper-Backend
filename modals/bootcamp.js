@@ -37,6 +37,10 @@ const bootcampSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please add an address"],
   },
+  city: {
+    type: String,
+    required: true,
+  },
   location: {
     // GeoJSON Point
     type: {
@@ -55,17 +59,8 @@ const bootcampSchema = new mongoose.Schema({
     country: String,
   },
   careers: {
-    // Array of strings
-    type: [String],
+    type: String,
     required: true,
-    enum: [
-      "Web Development",
-      "Mobile Development",
-      "UI/UX",
-      "Data Science",
-      "Business",
-      "Other",
-    ],
   },
   averageRating: {
     type: Number,
@@ -76,26 +71,27 @@ const bootcampSchema = new mongoose.Schema({
   totalCost: Number,
   image: {
     type: String,
-    default: "default-img.jpg",
+    default:
+      "https://res.cloudinary.com/prajjwalcdn/image/upload/v1625392111/coding-bootcamp-1024x486_bfms3v.png",
   },
   cloudinary_id: {
     type: String,
   },
   housing: {
-    type: Boolean,
-    default: false,
+    type: String,
+    default: "no",
   },
   jobAssistance: {
-    type: Boolean,
-    default: false,
+    type: String,
+    default: "no",
   },
   jobGuarantee: {
-    type: Boolean,
-    default: false,
+    type: String,
+    default: "no",
   },
-  acceptGi: {
-    type: Boolean,
-    default: false,
+  EMI: {
+    type: String,
+    default: "no",
   },
   createdAt: {
     type: Date,
