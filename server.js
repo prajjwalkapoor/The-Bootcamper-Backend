@@ -32,12 +32,9 @@ app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/courses", courses);
 app.use("/api/v1/auth", auth);
 
-app.get("/", async (req, res, next) => {
-  try {
-    res.send({ success: true, message: "this is the landing of the server" });
-  } catch (error) {
-    next(error);
-  }
+app.get("/", (req, res, next) => {
+  res.send({ success: true, message: "this is the landing of the server" });
+  next();
 });
 
 //middlewares
