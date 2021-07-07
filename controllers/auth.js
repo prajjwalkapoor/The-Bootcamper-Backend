@@ -25,7 +25,9 @@ exports.loginUser = async (req, res, next) => {
   try {
     const { password, email } = req.body;
     if (!password || !email)
-      return next(new Error("Inavlid or empty credentials"));
+      return res
+        .status(404)
+        .json({ success: false, message: "user not found" });
     user = await Users.findOne({ email }).select("+password");
     if (!user) return next(new Error("Inavlid or empty credentials"));
 
