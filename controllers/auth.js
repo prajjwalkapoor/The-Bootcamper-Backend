@@ -25,15 +25,19 @@ exports.loginUser = async (req, res, next) => {
   try {
     const { password, email } = req.body;
     if (!password || !email)
+      return next(new Error("Inavlid or empty credentials"));
+    user = await Users.findOne({ email }).select("+password");
+    if (!user)
       return res
         .status(404)
-        .json({ success: false, message: "user not found" });
-    user = await Users.findOne({ email }).select("+password");
-    if (!user) return next(new Error("Inavlid or empty credentials"));
+        .json({ success: false, message: "User not found with this email" });
 
     const isPassMatch = await user.matchPassword(password);
 
-    if (!isPassMatch) return next(new Error("Invalid or empty credention"));
+    if (!isPassMatch)
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid Password entered" });
     const jwtToken = user.getSignedJwtToken();
     res.send({ success: true, token: jwtToken });
   } catch (error) {
