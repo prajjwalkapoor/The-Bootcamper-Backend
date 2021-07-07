@@ -29,14 +29,14 @@ exports.loginUser = async (req, res, next) => {
     user = await Users.findOne({ email }).select("+password");
     if (!user)
       return res
-        .status(404)
+        .status(401)
         .json({ success: false, message: "User not found with this email" });
 
     const isPassMatch = await user.matchPassword(password);
 
     if (!isPassMatch)
       return res
-        .status(404)
+        .status(401)
         .json({ success: false, message: "Invalid Password entered" });
     const jwtToken = user.getSignedJwtToken();
     res.send({ success: true, token: jwtToken });
